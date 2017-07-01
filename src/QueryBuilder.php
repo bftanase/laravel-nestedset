@@ -948,10 +948,14 @@ class QueryBuilder extends Builder
 
         if ( ! empty($existing)) {
             if ($delete && ! $this->model->usesSoftDelete()) {
-                $this->model
+                $nodesToDelete = $this->model
                     ->newScopedQuery()
                     ->whereIn($this->model->getKeyName(), array_keys($existing))
-                    ->delete();
+                    ->get();
+
+                foreach ($nodesToDelete as $nodeToDelete) {
+                    $nodeToDelete->delete();
+                }
             } else {
                 foreach ($existing as $model) {
                     $dictionary[$model->getParentId()][] = $model;
